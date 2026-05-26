@@ -9,12 +9,12 @@ class virtual_machine:
         self.current_filename = ''
         self.asm_code = ''
 
-        self.write('@256')
-        self.write('D=A')
-        self.write('@SP')
-        self.write('M=D')
-        self.write('@Sys.init')
-        self.write('0;JMP')
+        # self.write('@256')
+        # self.write('D=A')
+        # self.write('@SP')
+        # self.write('M=D')
+        # self.write('@Sys.init')
+        # self.write('0;JMP')
 
 
 
@@ -393,167 +393,13 @@ class virtual_machine:
 
 
     def translate_function(self, function_name, n_local_vars):
-        self.write(f'(function_{function_name})')
-
-        self.write(f'@{n_local_vars}')
-        self.write('D=A')
-
-        self.write('@R13')
-        self.write('M=D')
-
-        self.write(f'(LOOP_{self.label_count})')
-
-        self.write('@R13')
-        self.write('M=M-1')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=0')
-
-        self.write('@SP')
-        self.write('M=M+1')
-
-        self.write('@R13')
-        self.write('D=M')
-
-        self.write(f'@LOOP_{self.label_count}')
-        self.write('D;JNE')
-
+        pass
 
     def translate_call(self, function_name, n_vars_arg):
-        self.write(f'@return_address_{function_name}_{self.label_count}')
-        self.write('D=A')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
-        self.write('@SP')
-        self.write('M=M+1')
-
-        self.write('@LCL')
-        self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
-        self.write('@SP')
-        self.write('M=M+1')
-
-
-        self.write('@ARG')
-        self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
-        self.write('@SP')
-        self.write('M=M+1')
-
-        
-        self.write('@THIS')
-        self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
-        self.write('@SP')
-        self.write('M=M+1')
-
-
-        self.write('@THAT')
-        self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
-        self.write('@SP')
-        self.write('M=M+1')
-
-
-        # настраеваем новый ARG
-        self.write('@SP')
-        self.write('D=M')
-        self.write(f'@{5 + int(n_vars_arg)}')
-        self.write('D=D-A')
-        self.write('@ARG')
-        self.write('M=D')
-
-        # настраеваем новый LCL
-        self.write('@SP')
-        self.write('D=M')
-        self.write('@LCL')
-        self.write('M=D')
-
-        # прыгаем на функцию
-        self.write(f'@function_{function_name}')
-
-        # адрес возврата
-        self.write(f'(return_address_{function_name}_{self.label_count})')
-
+        pass
 
     def translate_return(self):
-        # реузльтат выносим на аргументы функции
-        self.write('@SP')
-        self.write('M=M-1')
-        self.write('A=M')
-        self.write('D=M')
-
-        self.write('@ARG')
-        self.write('A=M')
-        self.write('M=D')
-
-        self.write('@ARG')
-        self.write('D=M')
-        self.write('@SP')
-        self.write('M=D+1')
-
-        self.write('@LCL')
-        self.write('D=M')
-        
-        self.write('@R13')
-        self.write('M=D')
-
-        self.write('@R13')
-        self.write('D=M')
-
-        # востанавливаем THAT
-        self.write('A=D-1')
-        self.write('D=M')
-        self.write('@THAT')
-        self.write('M=D')
-
-        # востанавливаем THIS
-        self.write('@2')
-        self.write('A=D-A')
-        self.write('D=M')
-        self.write('@THIS')
-        self.write('M=D')
-
-        # востанавливаем ARG
-        self.write('@3')
-        self.write('A=D-A')
-        self.write('D=M')
-        self.write('@ARG')
-        self.write('M=D')
-
-        # востанавливаем LCL
-        self.write('@4')
-        self.write('A=D-A')
-        self.write('D=M')
-        self.write('@LCL')
-        self.write('M=D')
-
-        # востанавливаем return_address
-        self.write('@5')
-        self.write('A=D-A')
-        self.write('A=M')
-        self.write('0;JMP')
-
+        pass
 
 
     def process(self):

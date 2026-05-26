@@ -1,9 +1,3 @@
-@256
-D=A
-@SP
-M=D
-@Sys.init
-0;JMP
 // function SimpleFunction.test 2
 (function_SimpleFunction.test)
 @2
