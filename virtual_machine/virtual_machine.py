@@ -5,25 +5,76 @@ class virtual_machine:
 
     def __init__(self):
         self.files_codes = {}
-        self.label_count = 0
+        self.label_count = 1
         self.current_filename = ''
         self.asm_code = ''
+        # self.bootstrap_code()
 
-        # self.write('@256')
-        # self.write('D=A')
-        # self.write('@SP')
-        # self.write('M=D')
-        # self.write('@Sys.init')
-        # self.write('0;JMP')
+
+    def bootstrap_code(self):
+        self.write("@256")
+        self.write("D=A")
+        self.write("@SP")
+        self.write("M=D")
+        self.write("@Sys.init$ret.0")
+        self.write("D=A")
+        self.write("@SP")
+        self.write("A=M")
+        self.write("M=D")
+        self.write("@SP")
+        self.write("M=M+1")
+        self.write("@LCL")
+        self.write("D=M")
+        self.write("@SP")
+        self.write("A=M")
+        self.write("M=D")
+        self.write("@SP")
+        self.write("M=M+1")
+        self.write("@ARG")
+        self.write("D=M")
+        self.write("@SP")
+        self.write("A=M")
+        self.write("M=D")
+        self.write("@SP")
+        self.write("M=M+1")
+        self.write("@THIS")
+        self.write("D=M")
+        self.write("@SP")
+        self.write("A=M")
+        self.write("M=D")
+        self.write("@SP")
+        self.write("M=M+1")
+        self.write("@THAT")
+        self.write("D=M")
+        self.write("@SP")
+        self.write("A=M")
+        self.write("M=D")
+        self.write("@SP")
+        self.write("M=M+1")
+        self.write("@SP")
+        self.write("D=M")
+        self.write("@5")
+        self.write("D=D-A")
+        self.write("@ARG")
+        self.write("M=D")
+        self.write("@SP")
+        self.write("D=M")
+        self.write("@LCL")
+        self.write("M=D")
+        self.write("@Sys.init")
+        self.write("0;JMP")
+        self.write("(Sys.init$ret.0)")
 
 
 
     def get_files_codes(self):
         directory = sys.argv[1]
         files = os.listdir(directory)
+        files = [file_name for file_name in files if not file_name.startswith('_')]
+        print(files)
 
         for file_name in files:
-            self.current_filename = file_name
+            self.current_filename = file_name.replace('.vm', '')
             f = open(os.path.join(directory, file_name), 'r+')
             self.files_codes[file_name] = f.readlines()
             f.close()
@@ -391,12 +442,93 @@ class virtual_machine:
 
             self.write(f'(END_{self.label_count})')
 
-
+    
+    # function call return
     def translate_function(self, function_name, n_local_vars):
-        pass
+        self.write(f'({self.current_filename}.{function_name})')
+        self.write(f'@{n_local_vars}')
+        self.write('D=A')
+        self.write('@R13')
+        self.write('M=D')
+
+
+        self.write(f'(LOOP_{self.label_count})')
+        self.write('@R13')
+        self.write('D=M')
+        self.write(f'@END_{self.label_count}')
+        self.write('D;JEQ')
+
+        self.write('@SP')
+        self.write('A=M')
+        self.write('M=0')
+        self.write('@SP')
+        self.write('M=M+1')
+
+        self.write('@R13')
+        self.write('M=M-1')
+
+        self.write(f'@LOOP_{self.label_count}')
+        self.write('0;JMP')
+
+        self.write(f'(END_{self.label_count})')
+
 
     def translate_call(self, function_name, n_vars_arg):
+        #push return address
+        self.write(f'@{self.current_filename}.{function_name}$ret.{self.label_count}')
+        self.write('D=A')
+        self.write('@SP')
+        self.write('A=M')
+        self.write('M=D')
+
+        self.write('@SP')
+        self.write('M=M+1')
+
+        #push LCL
+        self.write('@LCL')
+        self.write('D=M')
+
+        self.write('@SP')
+        self.write('A=M')
+        self.write('M=D')
+
+        self.write('@SP')
+        self.write('M=M+1')
+
+        #push ARG
+        self.write('@ARG')
+        self.write('D=M')
+
+        self.write('@SP')
+        self.write('A=M')
+        self.write('M=D')
+
+        self.write('@SP')
+        self.write('M=M+1')
+
+        #push THIS
+        self.write('@THIS')
+        self.write('D=M')
+
+        self.write('@SP')
+        self.write('A=M')
+        self.write('M=D')
+
+        self.write('@SP')
+        self.write('M=M+1')
+
+        #push THAT
+
+        #ARG = SP - nArgs - 5
+
+        #LCL = SP
+
+        #goto function
+
+        #return address:
+        self.write(f'({self.current_filename}.{function_name}$ret.{self.label_count})')
         pass
+
 
     def translate_return(self):
         pass
