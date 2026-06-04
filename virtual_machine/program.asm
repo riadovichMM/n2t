@@ -7,7 +7,7 @@ M=D
 (LOOP_1)
 @R13
 D=M
-@END_1
+@END_LOOP_1
 D;JEQ
 @SP
 A=M
@@ -18,7 +18,7 @@ M=M+1
 M=M-1
 @LOOP_1
 0;JMP
-(END_1)
+(END_LOOP_1)
 // push constant 4000
 @4000
 D=A
@@ -64,7 +64,7 @@ D=M
 A=M
 M=D
 // call Sys.main 0
-@Sys.main$ret.6
+@Sys.main.return_6
 D=A
 @SP
 A=M
@@ -92,19 +92,17 @@ A=M
 M=D
 @SP
 M=M+1
-@THIS
+@THAT
 D=M
 @SP
 A=M
 M=D
 @SP
 M=M+1
-@SP
-D=M
 @5
-D=D-A
-@0
-D=D-A
+D=A
+@SP
+D=M-D
 @ARG
 M=D
 @SP
@@ -113,7 +111,7 @@ D=M
 M=D
 @Sys.main
 0;JMP
-(Sys.main$ret.6)
+(Sys.main.return_6)
 // pop temp 1
 @5
 D=A
@@ -142,7 +140,7 @@ M=D
 (LOOP_10)
 @R13
 D=M
-@END_10
+@END_LOOP_10
 D;JEQ
 @SP
 A=M
@@ -153,7 +151,7 @@ M=M+1
 M=M-1
 @LOOP_10
 0;JMP
-(END_10)
+(END_LOOP_10)
 // push constant 4001
 @4001
 D=A
@@ -273,7 +271,7 @@ M=D
 @SP
 M=M+1
 // call Sys.add12 1
-@Sys.add12$ret.22
+@Sys.add12.return_22
 D=A
 @SP
 A=M
@@ -301,19 +299,17 @@ A=M
 M=D
 @SP
 M=M+1
-@THIS
+@THAT
 D=M
 @SP
 A=M
 M=D
 @SP
 M=M+1
+@6
+D=A
 @SP
-D=M
-@5
-D=D-A
-@1
-D=D-A
+D=M-D
 @ARG
 M=D
 @SP
@@ -322,7 +318,7 @@ D=M
 M=D
 @Sys.add12
 0;JMP
-(Sys.add12$ret.22)
+(Sys.add12.return_22)
 // pop temp 0
 @5
 D=A
@@ -445,6 +441,8 @@ M=D
 D=M
 @5
 D=D-A
+A=D
+D=M
 @R14
 M=D
 @SP
@@ -459,28 +457,22 @@ D=M+1
 @SP
 M=D
 @R13
-A=M-1
+AM=M-1
 D=M
 @THAT
 M=D
 @R13
-D=M
-@2
-A=D-A
+AM=M-1
 D=M
 @THIS
 M=D
 @R13
-D=M
-@3
-A=D-A
+AM=M-1
 D=M
 @ARG
 M=D
 @R13
-D=M
-@4
-A=D-A
+AM=M-1
 D=M
 @LCL
 M=D
@@ -496,7 +488,7 @@ M=D
 (LOOP_34)
 @R13
 D=M
-@END_34
+@END_LOOP_34
 D;JEQ
 @SP
 A=M
@@ -507,7 +499,7 @@ M=M+1
 M=M-1
 @LOOP_34
 0;JMP
-(END_34)
+(END_LOOP_34)
 // push constant 4002
 @4002
 D=A
@@ -591,6 +583,8 @@ M=D
 D=M
 @5
 D=D-A
+A=D
+D=M
 @R14
 M=D
 @SP
@@ -605,28 +599,22 @@ D=M+1
 @SP
 M=D
 @R13
-A=M-1
+AM=M-1
 D=M
 @THAT
 M=D
 @R13
-D=M
-@2
-A=D-A
+AM=M-1
 D=M
 @THIS
 M=D
 @R13
-D=M
-@3
-A=D-A
+AM=M-1
 D=M
 @ARG
 M=D
 @R13
-D=M
-@4
-A=D-A
+AM=M-1
 D=M
 @LCL
 M=D

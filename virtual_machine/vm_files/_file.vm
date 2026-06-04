@@ -1,0 +1,7 @@
+push constant 10
+call negative 1
+
+function negative 0
+    pop argument 0
+    neg
+    return

@@ -443,110 +443,330 @@ class virtual_machine:
             self.write(f'(END_{self.label_count})')
 
     
-    # function call return
+    # # function call return
+    # def translate_function(self, function_name, n_local_vars):
+    #     self.write(f'({function_name})')
+    #     self.write(f'@{function_name}.locals')
+    #     self.write('M=0')
+
+    #     self.write(f'({function_name}.locals_loop)')
+
+    #     self.write(f'@{n_local_vars}')
+    #     self.write('D=A')
+
+    #     self.write(f'@{function_name}.locals')
+    #     self.write('D=D-M')
+
+    #     self.write(f'@{function_name}.end_locals_loop')
+    #     self.write('D;JEQ')
+
+    #     self.write('@SP')
+    #     self.write('M=M+1')
+    #     self.write('A=M-1')
+    #     self.write('M=0')
+
+    #     self.write(f'@{function_name}.locals')
+    #     self.write('M=M+1')
+
+    #     self.write(f'@{function_name}.locals_loop')
+    #     self.write('0;JMP')
+
+    #     self.write(f'({function_name}.end_locals_loop)')
+
+
+    # def translate_call(self, function_name, n_vars_arg):
+    #     self.write(f'@{function_name}.return_{self.label_count}')
+    #     self.write('D=A')
+    #     self.write('@SP')
+    #     self.write('M=M+1')
+    #     self.write('A=M-1')
+    #     self.write('M=D')
+
+    #     self.write('@LCL')
+    #     self.write('D=M')
+    #     self.write('@SP')
+    #     self.write('M=M+1')
+    #     self.write('A=M-1')
+    #     self.write('M=D')
+
+    #     self.write('@ARG')
+    #     self.write('D=M')
+    #     self.write('@SP')
+    #     self.write('M=M+1')
+    #     self.write('A=M-1')
+    #     self.write('M=D')
+
+    #     self.write('@THIS')
+    #     self.write('D=M')
+    #     self.write('@SP')
+    #     self.write('M=M+1')
+    #     self.write('A=M-1')
+    #     self.write('M=D')
+
+    #     self.write('@THAT')
+    #     self.write('D=M')
+    #     self.write('@SP')
+    #     self.write('M=M+1')
+    #     self.write('A=M-1')
+    #     self.write('M=D')
+    #     # вот тут надо проврить 
+    #     self.write('@SP')
+    #     self.write('D=M')
+
+    #     # self.write('D=A+1')
+
+    #     self.write(f'@{5 + int(n_vars_arg)}')
+    #     self.write('D=D-A')
+    #     self.write('@ARG')
+    #     self.write('M=D')
+
+    #     self.write('@SP')
+    #     self.write('D=M')
+
+    #     self.write('@LCL')
+    #     self.write('M=D')
+
+    #     self.write(f'@{function_name}')
+    #     self.write(f'0;JMP')
+    #     self.write(f'({function_name}.return_{self.label_count})')
+
+
+
+    # def translate_return(self):
+    #     frame = 'R14'
+    #     ret = 'R15'
+
+    #     self.write('@LCL')
+    #     self.write('D=M')
+    #     self.write(f'@{frame}')
+    #     self.write('M=D')
+
+    #     self.write('@5')
+    #     self.write('A=D-A')
+    #     self.write('D=M')
+
+    #     self.write(f'@{ret}')
+    #     self.write('M=D')
+
+    #     self.write('@SP')
+    #     self.write('M=M-1')
+    #     self.write('A=M')
+    #     self.write('D=M')
+
+    #     self.write('@ARG')
+    #     self.write('A=M')
+    #     self.write('M=D')
+
+    #     self.write('D=A+1')
+    #     self.write('@SP')
+    #     self.write('M=D')
+
+    #     self.write(f'@{frame}')
+    #     self.write('AM=M-1')
+    #     self.write('D=M')
+    #     self.write('@THAT')
+    #     self.write('M=D')
+
+    #     self.write(f'@{frame}')
+    #     self.write('AM=M-1')
+    #     self.write('D=M')
+    #     self.write('@THIS')
+    #     self.write('M=D')
+
+    #     self.write(f'@{frame}')
+    #     self.write('AM=M-1')
+    #     self.write('D=M')
+    #     self.write('@ARG')
+    #     self.write('M=D')
+
+    #     self.write(f'@{frame}')
+    #     self.write('AM=M-1')
+    #     self.write('D=M')
+    #     self.write('@LCL')
+    #     self.write('M=D')
+
+    #     self.write(f'@{ret}')
+    #     self.write('A=M')
+    #     self.write('0;JMP')
+
+
+
     def translate_function(self, function_name, n_local_vars):
         self.write(f'({function_name})')
-        self.write(f'@{function_name}.locals')
-        self.write('M=0')
-
-        self.write(f'({function_name}.locals_loop)')
-
         self.write(f'@{n_local_vars}')
         self.write('D=A')
+        self.write('@R13')
+        self.write('M=D')
 
-        self.write(f'@{function_name}.locals')
-        self.write('D=D-M')
-
-        self.write(f'@{function_name}.end_locals_loop')
+        self.write(f'(LOOP_{self.label_count})')
+        self.write('@R13')
+        self.write('D=M')
+        self.write(f'@END_LOOP_{self.label_count}')
         self.write('D;JEQ')
 
         self.write('@SP')
-        self.write('M=M+1')
-        self.write('A=M-1')
+        self.write('A=M')
         self.write('M=0')
-
-        self.write(f'@{function_name}.locals')
+        self.write('@SP')
         self.write('M=M+1')
 
-        self.write('@{function_name}.locals_loop')
+        self.write('@R13')
+        self.write('M=M-1')
+
+        self.write(f'@LOOP_{self.label_count}')
         self.write('0;JMP')
 
-        self.write(f'({function_name}.end_locals_loop)')
+        self.write(f'(END_LOOP_{self.label_count})')
 
 
-    def translate_call(self, function_name, n_vars_arg):
+
+    def translate_call(self, function_name, n_args_vars):
         self.write(f'@{function_name}.return_{self.label_count}')
         self.write('D=A')
         self.write('@SP')
-        self.write('M=M+1')
-        self.write('A=M-1')
+        self.write('A=M')
         self.write('M=D')
+        self.write('@SP')
+        self.write('M=M+1')
 
         self.write('@LCL')
         self.write('D=M')
         self.write('@SP')
-        self.write('M=M+1')
-        self.write('A=M-1')
+        self.write('A=M')
         self.write('M=D')
+        self.write('@SP')
+        self.write('M=M+1')
+
 
         self.write('@ARG')
         self.write('D=M')
         self.write('@SP')
-        self.write('M=M+1')
-        self.write('A=M-1')
+        self.write('A=M')
         self.write('M=D')
+        self.write('@SP')
+        self.write('M=M+1')
 
         self.write('@THIS')
         self.write('D=M')
         self.write('@SP')
-        self.write('M=M+1')
-        self.write('A=M-1')
+        self.write('A=M')
         self.write('M=D')
+        self.write('@SP')
+        self.write('M=M+1')
 
         self.write('@THAT')
         self.write('D=M')
         self.write('@SP')
-        self.write('M=M+1')
-        self.write('A=M-1')
+        self.write('A=M')
         self.write('M=D')
-        # вот тут надо проврить 
-        self.write('D=A+1')
+        self.write('@SP')
+        self.write('M=M+1')
 
-        self.write(f'@{5+n_vars_arg}')
-        self.write('D=D-A')
+        self.write(f'@{5 + int(n_args_vars)}')
+        self.write('D=A')
+        self.write('@SP')
+        self.write('D=M-D')
         self.write('@ARG')
         self.write('M=D')
 
         self.write('@SP')
         self.write('D=M')
-
         self.write('@LCL')
         self.write('M=D')
 
         self.write(f'@{function_name}')
-        self.write(f'0;JMP')
+        self.write('0;JMP')
+
         self.write(f'({function_name}.return_{self.label_count})')
 
 
-
     def translate_return(self):
-        frame = 'R14'
-        ret = 'R15'
-
         self.write('@LCL')
         self.write('D=M')
-        self.write(f'@{frame}')
+        self.write('@R13')
         self.write('M=D')
 
-        self.write('@5')
-        self.write('A=D-A')
+        self.write('@R13')
         self.write('D=M')
+        self.write('@5')
+        self.write('D=D-A')
+        self.write('A=D')
+        self.write('D=M')
+        self.write('@R14')
+        self.write('M=D')
 
-        self.write('')
+
+        self.write('@SP')
+        self.write('M=M-1')
+        self.write('A=M')
+        self.write('D=M')
+        self.write('@ARG')
+        self.write('A=M')
+        self.write('M=D')
+
+        self.write('@ARG')
+        self.write('D=M+1')
+        self.write('@SP')
+        self.write('M=D')
+
+
+        self.write('@R13')
+        self.write('AM=M-1')
+        self.write('D=M')
+        self.write('@THAT')
+        self.write('M=D')
+
+        self.write('@R13')
+        self.write('AM=M-1')
+        self.write('D=M')
+        self.write('@THIS')
+        self.write('M=D')
+
+        self.write('@R13')
+        self.write('AM=M-1')
+        self.write('D=M')
+        self.write('@ARG')
+        self.write('M=D')
+
+        self.write('@R13')
+        self.write('AM=M-1')
+        self.write('D=M')
+        self.write('@LCL')
+        self.write('M=D')
+
+        self.write('@R14')
+        self.write('A=M')
+        self.write('0;JMP')
 
 
 
-        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
