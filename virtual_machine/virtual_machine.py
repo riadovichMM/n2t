@@ -446,209 +446,107 @@ class virtual_machine:
     # function call return
     def translate_function(self, function_name, n_local_vars):
         self.write(f'({function_name})')
+        self.write(f'@{function_name}.locals')
+        self.write('M=0')
+
+        self.write(f'({function_name}.locals_loop)')
+
         self.write(f'@{n_local_vars}')
         self.write('D=A')
-        self.write('@R13')
-        self.write('M=D')
 
+        self.write(f'@{function_name}.locals')
+        self.write('D=D-M')
 
-        self.write(f'(LOOP_{self.label_count})')
-        self.write('@R13')
-        self.write('D=M')
-        self.write(f'@END_{self.label_count}')
+        self.write(f'@{function_name}.end_locals_loop')
         self.write('D;JEQ')
 
         self.write('@SP')
-        self.write('A=M')
+        self.write('M=M+1')
+        self.write('A=M-1')
         self.write('M=0')
-        self.write('@SP')
+
+        self.write(f'@{function_name}.locals')
         self.write('M=M+1')
 
-        self.write('@R13')
-        self.write('M=M-1')
-
-        self.write(f'@LOOP_{self.label_count}')
+        self.write('@{function_name}.locals_loop')
         self.write('0;JMP')
 
-        self.write(f'(END_{self.label_count})')
+        self.write(f'({function_name}.end_locals_loop)')
 
 
     def translate_call(self, function_name, n_vars_arg):
-        #push return address
-        self.write(f'@{function_name}$ret.{self.label_count}')
+        self.write(f'@{function_name}.return_{self.label_count}')
         self.write('D=A')
         self.write('@SP')
-        self.write('A=M')
+        self.write('M=M+1')
+        self.write('A=M-1')
         self.write('M=D')
 
-        self.write('@SP')
-        self.write('M=M+1')
-
-        #push LCL
         self.write('@LCL')
         self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
         self.write('@SP')
         self.write('M=M+1')
+        self.write('A=M-1')
+        self.write('M=D')
 
-        #push ARG
         self.write('@ARG')
         self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
         self.write('@SP')
         self.write('M=M+1')
+        self.write('A=M-1')
+        self.write('M=D')
 
-        #push THIS
         self.write('@THIS')
         self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
-        self.write('M=D')
-
         self.write('@SP')
         self.write('M=M+1')
-
-        #push THAT
-        self.write('@THIS')
-        self.write('D=M')
-
-        self.write('@SP')
-        self.write('A=M')
+        self.write('A=M-1')
         self.write('M=D')
 
+        self.write('@THAT')
+        self.write('D=M')
         self.write('@SP')
         self.write('M=M+1')
+        self.write('A=M-1')
+        self.write('M=D')
+        # вот тут надо проврить 
+        self.write('D=A+1')
 
-
-        # ARG = SP - nArgs - 5
-        self.write('@SP')
-        self.write('D=M')
-
-        self.write('@5')
+        self.write(f'@{5+n_vars_arg}')
         self.write('D=D-A')
-
-        self.write(f'@{n_vars_arg}')
-        self.write('D=D-A')
-
         self.write('@ARG')
         self.write('M=D')
 
-
-        #LCL = SP
         self.write('@SP')
         self.write('D=M')
 
         self.write('@LCL')
         self.write('M=D')
 
-
-        #goto function
         self.write(f'@{function_name}')
-        self.write('0;JMP')
+        self.write(f'0;JMP')
+        self.write(f'({function_name}.return_{self.label_count})')
 
-
-        #return address:
-        self.write(f'({function_name}$ret.{self.label_count})')
 
 
     def translate_return(self):
-        # frame = LCL
+        frame = 'R14'
+        ret = 'R15'
+
         self.write('@LCL')
         self.write('D=M')
-
-        self.write('@R13')
+        self.write(f'@{frame}')
         self.write('M=D')
-
-
-        # retAddres = *(frame-5)
-        self.write('@R13')
-        self.write('D=M')
 
         self.write('@5')
-        self.write('D=D-A')
-
-        self.write('@R14')
-        self.write('M=D')
-
-
-        # *ARG = pop()
-        self.write('@SP')
-        self.write('M=M-1')
-        self.write('A=M')
-        self.write('D=M')
-
-        self.write('@ARG')
-        self.write('A=M')
-        self.write('M=D')
-
-        # SP = ARG + 1
-        self.write('@ARG')
-        self.write('D=M+1')
-
-        self.write('@SP')
-        self.write('M=D')
-
-
-        # THAT = *(frame - 1)
-        self.write('@R13')
-        self.write('A=M-1')
-        self.write('D=M')
-
-
-        self.write('@THAT')
-        self.write('M=D')
-
-
-        # THIS = *(frame - 2)
-        self.write('@R13')
-        self.write('D=M')
-
-        self.write('@2')
         self.write('A=D-A')
         self.write('D=M')
 
-        self.write('@THIS')
-        self.write('M=D')
+        self.write('')
 
 
-        # ARG = *(frame - 3)
-        self.write('@R13')
-        self.write('D=M')
 
-        self.write('@3')
-        self.write('A=D-A')
-        self.write('D=M')
-
-
-        self.write('@ARG')
-        self.write('M=D')
-
-        # LCL = *(frame - 4)
-        self.write('@R13')
-        self.write('D=M')
-
-        self.write('@4')
-        self.write('A=D-A')
-        self.write('D=M')
-
-
-        self.write('@LCL')
-        self.write('M=D')
-
-        # goto retAddress
-        self.write('@R14')
-        self.write('A=M')
-
-        self.write('0;JMP')
+        
 
 
 
