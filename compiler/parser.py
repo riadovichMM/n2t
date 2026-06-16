@@ -1,0 +1,105 @@
+class parser:
+
+    def __init__(self, tokens):
+        self.tokens = tokens
+        self.index = 0
+        self.finish_tokens = ''
+
+
+    def run(self):
+        print('tokens', self.tokens)
+        self.compile_class()
+
+    def get_current_token(self):
+        return self.tokens[self.index]
+
+    def write_in_xml(self, text):
+        self.finish_tokens += text + '\n'
+
+    def advance(self):
+        self.index += 1
+
+    def process(self, type, value=None):
+        current_token = self.tokens[self.index]
+        if (current_token[0] != type):
+            raise Exception('token type != type')
+        if value:
+            if current_token[1] != value:
+                raise Exception('token value != value')
+        if value:
+            self.write_in_xml(f'<{type}>{value}</{type}>')
+        else:
+            self.write_in_xml(f'<{type}>{current_token[1]}</{type}>')
+
+        self.index += 1
+
+    # grammar
+
+    def compile_class(self):
+        self.write_in_xml('<class>')
+        self.process('keyword', 'class')
+        self.process('identifier')
+        self.process('symbol', '{')
+
+        current_token = self.get_current_token()
+        while current_token[1] == 'field' or current_token[1] == 'static':
+            self.class_var_dec()
+            current_token = self.get_current_token()
+
+
+        current_token = self.get_current_token()
+        while current_token[1] == 'constructor' or current_token[1] == 'function' or current_token[1] == 'method':
+            self.subroutine_dec()
+            current_token = self.get_current_token()
+
+
+        self.write_in_xml('</class>')
+        print(self.finish_tokens)
+
+
+
+    def class_var_dec(self):
+        self.write_in_xml('<classVarDec>')
+        
+        self.process('keyword') # static | field
+
+        # get type
+        current_token = self.get_current_token()
+
+        self.write_in_xml(f'<{current_token[0]}>{current_token[1]}</{current_token[0]}>')
+        self.advance()
+
+        self.process('identifier')
+
+        current_token = self.get_current_token()
+        while current_token[1] == ',':
+            self.process('symbol', ',')
+            self.process('identifier')
+            current_token = self.get_current_token()
+        self.process('symbol', ';')
+
+        self.write_in_xml('</classVarDec>')
+
+
+    def subroutine_dec(self):
+        self.write_in_xml('<subroutineDec>')
+        self.process('keyword') # constructor | function | method 
+        self.handle_type()
+        self.process('identifier')
+        self.process('symbol', '(')
+        
+        self.parameter_list()
+
+        # todo
+        self.write_in_xml('</subroutineDec>')
+
+
+    def parameter_list(self):
+        pass
+
+    def handle_type(self):
+        current_token = self.get_current_token()
+
+        self.write_in_xml(f'<{current_token[0]}>{current_token[1]}</{current_token[0]}>')
+        self.advance()
+

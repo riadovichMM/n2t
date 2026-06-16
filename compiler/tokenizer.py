@@ -1,4 +1,6 @@
 import re
+import xml.etree.cElementTree as ET
+
 
 class tokenizer:
 
@@ -6,6 +8,7 @@ class tokenizer:
         self.code = ''
         self.state = 'start'
         self.index = 0
+        self.filename = None
 
         self.keywords = {
             "class", "constructor", "function", "method",
@@ -29,6 +32,7 @@ class tokenizer:
         return code
 
     def open_file(self, path):
+        self.filename = path
         file = open(path, 'r+')
         jack_code_array = file.readlines()
         file.close()
@@ -39,7 +43,7 @@ class tokenizer:
         self.code = self.remove_comments_simple(self.code)
 
 
-    def process(self):
+    def run(self):
         while self.index < len(self.code):
             if self.code[self.index].isspace():
                 self.index += 1
@@ -52,7 +56,6 @@ class tokenizer:
                 self.get_integer_constant()
             if self.code[self.index] in self.symbols:
                 self.get_symbol()
-        print(self.tokens)
 
 
     def get_keyword_or_identifier(self):
@@ -100,3 +103,13 @@ class tokenizer:
     def get_symbol(self):
         self.tokens.append(['symbol', self.code[self.index]])
         self.index += 1
+
+    def generate_xml(self):
+        root = ET.Element("tokens")
+        for item in self.tokens:
+            ET.SubElement(root, item[0]).text = item[1]
+        ET.indent(root, space="  ") 
+        tree = ET.ElementTree(root)
+        output_filename = str(self.filename).split('\\')[1].split('.')[0]
+        tree.write('xml/' + output_filename + '.xml')
+
