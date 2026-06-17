@@ -88,14 +88,18 @@ class parser:
         self.process('identifier')
         self.process('symbol', '(')
         
-        self.parameter_list()
+        next_token = self.tokens[self.index+1]
+        if next_token[1] != ')':
+            self.parameter_list()
 
         # todo
         self.write_in_xml('</subroutineDec>')
 
 
     def parameter_list(self):
-        pass
+        self.write_in_xml('<parameterList>')
+        
+        self.write_in_xml('</parameterList>')
 
     def handle_type(self):
         current_token = self.get_current_token()
