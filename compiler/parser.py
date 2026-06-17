@@ -4,17 +4,17 @@ class parser:
         self.tokens = tokens
         self.index = 0
         self.finish_tokens = ''
+        self.level_tab = 0
 
 
     def run(self):
-        print('tokens', self.tokens)
         self.compile_class()
 
     def get_current_token(self):
         return self.tokens[self.index]
 
     def write_in_xml(self, text):
-        self.finish_tokens += text + '\n'
+        self.finish_tokens += self.level_tab * ' ' + text + '\n'
 
     def advance(self):
         self.index += 1
@@ -37,6 +37,7 @@ class parser:
 
     def compile_class(self):
         self.write_in_xml('<class>')
+        self.level_tab += 1
         self.process('keyword', 'class')
         self.process('identifier')
         self.process('symbol', '{')
@@ -52,7 +53,7 @@ class parser:
             self.subroutine_dec()
             current_token = self.get_current_token()
 
-
+        self.level_tab -= 1
         self.write_in_xml('</class>')
         print(self.finish_tokens)
 
@@ -60,6 +61,8 @@ class parser:
 
     def class_var_dec(self):
         self.write_in_xml('<classVarDec>')
+        self.level_tab += 1
+
         
         self.process('keyword') # static | field
 
@@ -77,12 +80,14 @@ class parser:
             self.process('identifier')
             current_token = self.get_current_token()
         self.process('symbol', ';')
-
+        self.level_tab -= 1
         self.write_in_xml('</classVarDec>')
 
 
     def subroutine_dec(self):
         self.write_in_xml('<subroutineDec>')
+        self.level_tab += 1
+
         self.process('keyword') # constructor | function | method 
         self.handle_type()
         self.process('identifier')
@@ -91,14 +96,28 @@ class parser:
         next_token = self.tokens[self.index+1]
         if next_token[1] != ')':
             self.parameter_list()
+        self.process('symbol', ')')
+        
+        self.subroutine_body()
 
         # todo
+        self.level_tab -= 1
         self.write_in_xml('</subroutineDec>')
 
 
     def parameter_list(self):
         self.write_in_xml('<parameterList>')
-        
+
+        self.handle_type()
+        self.process('identifier')
+
+        current_token = self.get_current_token()
+        while current_token[1] == ',':
+            self.process('symbol', ',')
+            self.handle_type()
+            self.process('identifier')
+            current_token = self.get_current_token()
+
         self.write_in_xml('</parameterList>')
 
     def handle_type(self):
@@ -106,4 +125,17 @@ class parser:
 
         self.write_in_xml(f'<{current_token[0]}>{current_token[1]}</{current_token[0]}>')
         self.advance()
+
+    def subroutine_body(self):
+        self.write_in_xml('<subroutineBody>')
+        self.level_tab += 1
+        self.process('symbol', '{')
+
+        self.var_dec()
+
+        self.process('symbol', '}')
+        self.level_tab += 0
+        self.write_in_xml('</subroutineBody>')
+
+
 
