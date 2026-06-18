@@ -148,6 +148,8 @@ class parser:
             self.var_dec()
             current_token = self.get_current_token()
 
+        self.statements()
+
 
         # self.process('symbol', '}')
 
@@ -175,6 +177,9 @@ class parser:
 
         self.level_tab -= 1
         self.write_in_xml('</varDec>')
+
+    def statements(self):
+        pass
 
 
 
