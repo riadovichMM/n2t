@@ -15,7 +15,7 @@ def main():
         t = tokenizer()
         t.open_file(file_path)
         t.run()
-        # t.generate_xml()
+        t.generate_xml()
 
         p = parser(t.tokens)
         p.run()

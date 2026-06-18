@@ -19,6 +19,14 @@ class parser:
     def advance(self):
         self.index += 1
 
+    def show_not_passed_tokens(self):
+        i = self.index
+
+        while i < len(self.tokens):
+            print(self.tokens[i])
+            i+=1
+        
+
     def process(self, type, value=None):
         current_token = self.tokens[self.index]
         if (current_token[0] != type):
@@ -93,9 +101,13 @@ class parser:
         self.process('identifier')
         self.process('symbol', '(')
         
-        next_token = self.tokens[self.index+1]
-        if next_token[1] != ')':
+        current_token = self.get_current_token()
+        if current_token[1] != ')':
             self.parameter_list()
+        else:
+            self.write_in_xml('<parameterList>')
+            self.write_in_xml('</parameterList>')
+
         self.process('symbol', ')')
         
         self.subroutine_body()
@@ -130,12 +142,40 @@ class parser:
         self.write_in_xml('<subroutineBody>')
         self.level_tab += 1
         self.process('symbol', '{')
+        
+        current_token = self.get_current_token()
+        while current_token[1] == 'var':
+            self.var_dec()
+            current_token = self.get_current_token()
 
-        self.var_dec()
 
-        self.process('symbol', '}')
-        self.level_tab += 0
+        # self.process('symbol', '}')
+
+        self.level_tab -= 1
         self.write_in_xml('</subroutineBody>')
+
+    def var_dec(self):
+        # она работает?
+        self.write_in_xml('<varDec>')
+        self.level_tab += 1
+
+        self.process('keyword', 'var')
+        self.handle_type()
+        self.process('identifier')
+
+
+        current_token = self.get_current_token()
+        while current_token[1] == ',':
+            print(current_token)
+            self.process('symbol', ',')
+            self.process('identifier')
+            current_token = self.get_current_token()
+
+        self.process('symbol', ';')
+
+        self.level_tab -= 1
+        self.write_in_xml('</varDec>')
+
 
 
 
