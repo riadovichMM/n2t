@@ -179,7 +179,14 @@ class parser:
         self.write_in_xml('</varDec>')
 
     def statements(self):
-        pass
+        self.write_in_xml('<statements>')
+        self.level_tab += 1
+        
+
+
+        self.level_tab -= 1
+        self.write_in_xml('</statements>')
+
 
 
 
