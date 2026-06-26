@@ -111,5 +111,5 @@ class tokenizer:
         ET.indent(root, space="  ") 
         tree = ET.ElementTree(root)
         output_filename = str(self.filename).split('\\')[1].split('.')[0]
-        tree.write('xml/' + output_filename + '.xml')
+        tree.write('xml/' + output_filename + 'T' + '.xml')
 

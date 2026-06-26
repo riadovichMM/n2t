@@ -17,8 +17,9 @@ def main():
         t.run()
         t.generate_xml()
 
-        p = parser(t.tokens)
+        p = parser(t.tokens, file_path)
         p.run()
+        p.generate_xml()
 
 
 main()
