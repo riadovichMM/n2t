@@ -1,7 +1,7 @@
 import sys
 from tokenizer import tokenizer
 from pathlib import Path
-# from parser import parser
+from parser import parser
 
 
 def main():
@@ -12,14 +12,14 @@ def main():
     files = [f for f in Path(path).iterdir() if f.is_file()]
 
     for file_path in files:
-        t = tokenizer()
-        t.open_file(file_path)
+        t = tokenizer(file_path)
+        t.open_file()
         t.run()
-        # t.generate_xml()
+        t.generate_xml_file()
 
-        # p = parser(t.tokens, file_path)
-        # p.run()
-        # p.generate_xml()
+        p = parser(t.tokens, file_path)
+        p.run()
+        # p.generate_xml_file()
 
 
 main()
