@@ -109,7 +109,12 @@ class tokenizer:
         self.tokens.append(['integerConstant', token])
 
     def generate_xml_file(self):
-        file_name = str(self.file_path).split('\\')[1]
+        # windows
+        # file_name = str(self.file_path).split('\\')[1]
+
+        # mac os
+        file_name = str(self.file_path).split('/')[1]
+
         clean_file_name = file_name.split('.')[0]
         print(clean_file_name)
 
